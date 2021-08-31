@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>Fetch API Sandob</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="display-4 mb-4">Fetch API Sandbox</h1>
+        <div class="d-flex">
+            <button id="getText" class="btn btn-primary me-4">Get Text</button>
+            <button id="getUsers" class="btn btn-success me-4">Get JSON</button>
+            <button id="getPosts" class="btn btn-warning me-4">Get API Data</button>
+        </div>
+        <hr />
+        <div id="output"></div>
+
+        <div class="form-group">
+            <form id="addPost">
+                <div class="form-group">
+                    <input class="form-control" type="text" id="title" placeholder="Title" />
+                </div>
+                <div>
+                    <textarea id="body" placeholder="Body" class="form-control"></textarea>
+                </div>
+                <input type="submit" value="Submit" class="btn btn-secondary mt-3" />
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('getText').addEventListener('click', getText);
+        document.getElementById('getUsers').addEventListener('click', getUsers);
+        document.getElementById('getPosts').addEventListener('click', getPosts);
+        document.getElementById('addPost').addEventListener('click', addPost);
+
+        function getText() {
+            fetch('sample.txt')
+                .then(response => response.text())
+                .then(data => document.getElementById('output').innerHTML = data)
+                .catch(err => console.log(err));
+        }
+
+        function getUsers() {
+            fetch('users.json')
+                .then(response => response.json())
+                .then(data => {
+                    let output = '<h2>Users</h2>';
+                    data.forEach(user => {
+                        output += `
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item">Id: ${user.id}</li>
+                            <li class="list-group-item">Name: ${user.name}</li>
+                            <li class="list-group-item">Email: ${user.email}</li>
+                        </ul>    
+                    `
+                    });
+                    document.getElementById('output').innerHTML = output;
+                })
+                .catch(err => console.log(err));
+        }
+
+        function getPosts() {
+            fetch('https://jsonplaceholder.typicode.com/posts')
+                .then(response => response.json())
+                .then(data => {
+                    let output = '<h2>Posts:</h2>';
+                    data.forEach(post => {
+                        output += `
+                        <div>
+                            <h3>${post.title}</h3>
+                            <p>${post.body}</p>
+                        </div>    
+                    `
+                    });
+                    document.getElementById('output').innerHTML = output;
+                })
+                .catch(err => console.log(err));
+        }
+
+        function addPost(e) {
+            e.preventDefault();
+
+            let title = document.getElementById('title').value;
+            let body = document.getElementById('body').value;
+
+            fetch('https://jsonplaceholder.typicode.com/posts', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: title,
+                    body: body
+                })
+            })
+                .then(res => res.json())
+                .then(data => console.log(data))
+                .catch(err => console.log(err));
+        }
+    </script>
+</body>
+
+</html>
